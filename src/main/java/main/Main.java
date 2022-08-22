@@ -14,12 +14,28 @@ public class Main {
     Scanner s = new Scanner(System.in);
     System.out.print("Difite o termo da busca: ");
     String term = s.nextLine();
-    System.out.println("\n Resultado para busca Serial: \n");
-    long serial = ReadFiles.readNameFromFilesSerial(term);
-    System.out.println("\n Resultado para busca Concorrente: ");
-    long conc = ReadFiles.readNameFromFileConcurrent(term);
+    long[] seriais = new long[10];
+    long[] concs = new long[10];
+    
+    for (int i = 0; i < 10; i++) {
+      System.out.println("\n Resultado para busca Serial: \n");
+      long serial = ReadFiles.readNameFromFilesSerial(term.toLowerCase());
+      System.out.println("\n Resultado para busca Concorrente: ");
+      long conc = ReadFiles.readNameFromFileConcurrent(term.toLowerCase());
 
-    System.out.printf("Tempo serial = %dms; tempo paralelo = %dms; Diferença: %dms", serial, conc, serial - conc);
+      System.out.printf("Tempo serial = %dms; tempo concorrente = %dms; Diferença: %dms", serial, conc, serial - conc);
+      seriais[i] = serial;
+      concs[i] = conc;
+    }
+
+    System.out.println("Tempos seriais");
+    for (long i : seriais) {
+      System.out.println(i);
+    }
+    System.out.println("Tempos concorrentes");
+    for (long i : concs) {
+      System.out.println(i);
+    }
   }
 
 }

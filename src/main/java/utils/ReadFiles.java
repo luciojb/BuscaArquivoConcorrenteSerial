@@ -1,8 +1,8 @@
 package utils;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -32,15 +32,15 @@ public class ReadFiles {
     }
     long time = System.currentTimeMillis();
     for (Path file : result) {
-      BufferedReader reader;
+      LineNumberReader reader;
       try {
-        reader = new BufferedReader(new FileReader(file.toAbsolutePath().toString()));
+        reader = new LineNumberReader(new FileReader(file.toAbsolutePath().toString()));
         String line = reader.readLine();
         int nLine = 1;
         while (line != null) {
           // read next line
           line = reader.readLine();
-          if (line != null && line.contains(name)) {
+          if (line != null && line.toLowerCase().contains(name)) {
             System.out.println(String.format("Aqruivo: %s | linha: %d | nome: %s", file.getFileName().toString(), nLine, line));
           }
           nLine++;
@@ -73,16 +73,16 @@ public class ReadFiles {
     List<Thread> threads = new ArrayList<>();
     for (Path file : result) {
       Thread t = new Thread(() -> {
-        BufferedReader reader;
+        LineNumberReader reader;
         try {
-          reader = new BufferedReader(new FileReader(file.toAbsolutePath().toString()));
+          reader = new LineNumberReader(new FileReader(file.toAbsolutePath().toString()));
           String line = reader.readLine();
           int nLine = 0;
           while (line != null) {
             // read next line
             line = reader.readLine();
             if (line != null && line.contains(name)) {
-              System.out.println(String.format("Aqruivo: %s | linha: %d | nome: %s", file.getFileName().toString(), nLine, line));
+              System.out.println(String.format("Aqruivo: %s | linha: %d | nome: %s", file.getFileName().toString(), reader.getLineNumber(), line));
             }
             nLine++;
           }
