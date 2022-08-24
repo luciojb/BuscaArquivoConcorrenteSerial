@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,12 +48,12 @@ public class ReadFiles {
         String line = reader.readLine();
         int nLine = 1;
         while (line != null) {
-          // read next line
-          line = reader.readLine();
-          if (line != null && line.toLowerCase().contains(name)) {
+          if (line.toLowerCase().contains(name)) {
             System.out.println(String.format("Aqruivo: %s | linha: %d | nome: %s", file.getFileName().toString(), nLine, line));
           }
           nLine++;
+          // read next line
+          line = reader.readLine();
         }
         reader.close();
       } catch (IOException e) {
@@ -88,12 +89,13 @@ public class ReadFiles {
           String line = reader.readLine();
           int nLine = 0;
           while (line != null) {
-            // read next line
-            line = reader.readLine();
-            if (line != null && line.contains(name)) {
+
+            if (line.contains(name)) {
               System.out.println(String.format("Aqruivo: %s | linha: %d | nome: %s", file.getFileName().toString(), reader.getLineNumber(), line));
             }
             nLine++;
+            // read next line
+            line = reader.readLine();
           }
           reader.close();
         } catch (IOException e) {
@@ -127,23 +129,18 @@ public class ReadFiles {
     }
     long time = System.currentTimeMillis();
     for (Path file : result) {
-      LineNumberReader reader;
+      BufferedReader reader;
       List<String> newLines = new ArrayList<>();
 
       try {
         if (!file.getFileName().toString().contains("complemento")) {
           System.out.printf("Lendo arquivo serial: %s \n", file.getFileName().toString());
-          reader = new LineNumberReader(new FileReader(file.toAbsolutePath().toString()));
+          reader = new BufferedReader(new FileReader(file.toAbsolutePath().toString()));
           String line = reader.readLine();
-          int nLine = 1;
           while (line != null) {
+            newLines.add(completeDNALineSerial(line));
             // read next line
             line = reader.readLine();
-
-            if (line != null) {
-              newLines.add(completeDNALineSerial(line));
-            }
-            nLine++;
           }
           reader.close();
           writeDNAFile(path, file.getFileName().toString().replace(".txt", "_complemento.txt"), newLines);
@@ -160,7 +157,8 @@ public class ReadFiles {
 
   private static String completeDNALineSerial(String line) {
     StringBuilder newLine = new StringBuilder();
-    for (String c : line.split("")) {
+    String[] lineSplit = line.split("");
+    for (String c : lineSplit) {
       newLine.append(dnaMapping.get(c));
     }
     return newLine.toString();
@@ -172,6 +170,7 @@ public class ReadFiles {
 
       for (String line : lines) {
         fw.write(line);
+        fw.write(System.lineSeparator());
       }
 
       fw.close();
@@ -198,23 +197,20 @@ public class ReadFiles {
     List<Thread> threads = new ArrayList<>();
     for (Path file : result) {
       Thread t = new Thread(() -> {
-        LineNumberReader reader;
+        BufferedReader reader;
         List<String> newLines = new ArrayList<>();
 
         try {
           if (!file.getFileName().toString().contains("complemento")) {
             System.out.printf("Lendo arquivo concorrente: %s \n", file.getFileName().toString());
-            reader = new LineNumberReader(new FileReader(file.toAbsolutePath().toString()));
+            reader = new BufferedReader(new FileReader(file.toAbsolutePath().toString()));
             String line = reader.readLine();
-            int nLine = 1;
             while (line != null) {
+
+              newLines.add(completeDNALineSerial(line));
+              
               // read next line
               line = reader.readLine();
-
-              if (line != null) {
-                newLines.add(completeDNALineSerial(line));
-              }
-              nLine++;
             }
             reader.close();
             writeDNAFile(path, file.getFileName().toString().replace(".txt", "_complemento_concorrente.txt"), newLines);
